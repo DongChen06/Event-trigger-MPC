@@ -108,7 +108,7 @@ def smooth(x, timestamps=9):
 
 
 def plot_Pendulum():
-    model_path = 'cloud'
+    model_path = 'sac_s_0_t_2022_07_28_13_07_53'
     path = '/home/reza/Downloads/Pend Env/runs/Pendulum/' + model_path
     obs = np.load(path + '/ob_history.npy')
     actions = np.load(path + '/actions.npy')
@@ -151,7 +151,7 @@ def plot_Pendulum():
 
 
 def plot_Veh():
-    model_path = 'sac_s_0_t_2022_03_27_22_55_14'
+    model_path = 'sac_s_0_t_2022_07_28_13_07_53'
     path = 'runs/Veh/' + model_path
     obs = np.load(path + '/ob_history.npy')
     actions = np.load(path + '/actions.npy')
@@ -168,20 +168,22 @@ def plot_Veh():
     axs[0, 1].set_title('Tracking error')
     axs[0, 1].set_xlabel('Time steps')
 
-    axs[0, 2].plot(actions, 'tab:green', label='actions')
-    axs[0, 2].plot(np.clip(actions, 0, 1), 'tab:green', label='actions_clipped')
+    axs[0, 2].plot(actions, c='green', label='actions')
+    axs[0, 2].plot(np.clip(actions, 0, 1), c='red', label='actions_clipped')
     axs[0, 2].set_title('Action')
     axs[0, 2].set_xlabel('Time steps')
+    axs[0, 2].legend()
 
     axs[1, 0].plot(u[0, :], label='u', c='red')
-    axs[1, 0].plot(u[2, :], linestyle='--', c='green', label='u_local')
-    axs[1, 0].plot(u[4, :], linestyle='-.', c='k', label='u_cloud')
+    axs[1, 0].plot(u[2, :], linestyle='--', c='green', label='u_cloud')
+    axs[1, 0].plot(u[4, :], linestyle='-.', c='k', label='u_local')
     axs[1, 0].set_title('Control Variable (Torque)')
     axs[1, 0].set_xlabel('Time steps')
+    axs[1, 0].legend()
 
     axs[1, 1].plot(u[1, :],  label='u', c='red')
-    axs[1, 1].plot(u[3, :],  linestyle='--', c='green', label='u_local')
-    axs[1, 1].plot(u[5, :],  linestyle='-.', c='k', label='u_cloud')
+    axs[1, 1].plot(u[3, :],  linestyle='--', c='green', label='u_cloud')
+    axs[1, 1].plot(u[5, :],  linestyle='-.', c='k', label='u_local')
     axs[1, 1].set_title('Control Variable (Steering))')
     axs[1, 1].set_xlabel('Time steps')
     axs[1, 1].legend()

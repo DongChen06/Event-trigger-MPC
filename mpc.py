@@ -41,8 +41,13 @@ def cloud_local_mpc(ct, N, alpha, t0, u0_bar, u_hat_traj, X0_2, state_init, actu
     )
     n_states = states.numel()
 
-    w = -0.01 + 0.16 * np.random.rand(n_states, 150)  # Original
-    w_x = -0.02 + 0.32 * np.random.rand(n_states, 150)  # Original
+    # w = -0.01 + 0.15 * np.random.rand(n_states, 150)  # local
+    # w_x = -0.02 + 0.2 * np.random.rand(n_states, 150)  # cloud
+    seed = 66
+    np.random.seed(seed)
+    random.seed(seed)
+    w = 0 * np.random.rand(n_states, 300)  # Original
+    w_x = 0.00 * np.random.rand(n_states, 300)  # Original
 
     # control symbolic variables
     u1 = ca.SX.sym('u1')
@@ -67,7 +72,17 @@ def cloud_local_mpc(ct, N, alpha, t0, u0_bar, u_hat_traj, X0_2, state_init, actu
     f_nonlinear = ca.Function('f1', [states, controls], [veh_rhs_nonlinear(states, controls)])  # nonlinear model
 
     # Linearization about the state at time ct and last control input
-    xref = state_init
+    if state_init[2, :]-actual_state[2, -1] > 0:
+
+        xref = ca.DM([20.7784, 9.38292, 2.03305, 0.0163441, 0.0801592, -0.0960399])
+        # xref = ca.DM([103.793, 9.0518, 2.06196, 0.00665512, -0.0900298, -0.044337])
+
+    else:
+        # xref = ca.DM([20.7784, 9.38292, 2.03305, 0.0163441, 0.0801592, -0.0960399])
+        xref = ca.DM([103.793, 9.0518, 2.06196, 0.00665512, -0.0900298, -0.044337])
+
+    # xref = state_init
+    # xref = ca.DM([0, 10, 0, -0.0691, 0.2343, -0.0123])
     uref = u0_bar[:, 0]
     A, B = linearize(xref, uref)
 
@@ -138,8 +153,8 @@ def cloud_local_mpc(ct, N, alpha, t0, u0_bar, u_hat_traj, X0_2, state_init, actu
 
     # cost = (state_init.T @ Q @ state_init) + (u @ R @ u)
     cost = 2.0 * (state_init[2] - 4 * sin(2 * pi / 50 * state_init[0])) ** 2 \
-           + 0.001 * u[0] ** 2 \
-           + 0.001 * u[1] ** 2
+           + 1e-6 * u[0] ** 2 \
+           + u[1] ** 2
 
     t0, state_init = shift_timestep(Ts, t0, state_init, u, plant)  # applying the control to the plant
     state_init += w[:, ct: ct + 1]

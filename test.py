@@ -79,30 +79,30 @@ def main():
     seed = 66
 
     # specify the model directory here
-    model_path = 'sac_s_0_t_2022_03_27_22_55_14'
+    model_path = 'sac_s_0_t_2022_07_28_13_07_53'
 
-    """finding the best model"""
-    print("------Finding the best model------")
-    for i in range(20, 501, 5):
-        np.random.seed(seed)
-        torch.manual_seed(seed)
-        random.seed(seed)
-
-        pretrained_model_path = 'runs/Veh/' + model_path
-        pretrained_model = torch.load(pretrained_model_path + '/save_model/Veh_sac_s_0_i_' + str(i) + '.pt', map_location=device)
-        agent.policy.load_state_dict(pretrained_model)
-
-        # Run one episode
-        eval_step_length, eval_episode_return, ob_history, actions = agent.test(args.max_step)
-        print("Model Index:", i, "Evaluation Return:", eval_episode_return, "Episode Length:", eval_step_length)
-        returns.append(eval_episode_return)
-        if eval_episode_return >= best_return:
-            best_model_index = i
-            best_return = eval_episode_return
-
-    print("Best model is", best_model_index)
-    print("Best return is", max(returns))
-    print("------------End------------")
+    # """finding the best model"""
+    # print("------Finding the best model------")
+    # for i in range(20, 501, 5):
+    #     np.random.seed(seed)
+    #     torch.manual_seed(seed)
+    #     random.seed(seed)
+    #
+    #     pretrained_model_path = 'runs/Veh/' + model_path
+    #     pretrained_model = torch.load(pretrained_model_path + '/save_model/Veh_sac_s_0_i_' + str(i) + '.pt', map_location=device)
+    #     agent.policy.load_state_dict(pretrained_model)
+    #
+    #     # Run one episode
+    #     eval_step_length, eval_episode_return, ob_history, actions = agent.test(args.max_step)
+    #     print("Model Index:", i, "Evaluation Return:", eval_episode_return, "Episode Length:", eval_step_length)
+    #     returns.append(eval_episode_return)
+    #     if eval_episode_return >= best_return:
+    #         best_model_index = i
+    #         best_return = eval_episode_return
+    #
+    # print("Best model is", best_model_index)
+    # print("Best return is", max(returns))
+    # print("------------End------------")
 
     """test a particular model"""
     print("------Testing the Best Model------")
@@ -110,7 +110,7 @@ def main():
     torch.manual_seed(seed)
     random.seed(seed)
     pretrained_model_path = 'runs/Veh/' + model_path
-    pretrained_model = torch.load(pretrained_model_path + '/save_model/Veh_sac_s_0_i_' + str(best_model_index) + '.pt', map_location=device)
+    pretrained_model = torch.load(pretrained_model_path + '/save_model/Veh_sac_s_0_i_' + str(480) + '.pt', map_location=device)
     agent.policy.load_state_dict(pretrained_model)
 
     # Run one episode

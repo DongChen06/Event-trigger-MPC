@@ -76,9 +76,9 @@ def cloud_mpc(N, state_init, u_init):
         st = X[:, k]
         con = U[:, k]
         cost_fn = cost_fn \
-                  + 2.0 * (st[2] - 4 * sin((2 * pi * st[0]) / 50 )) ** 2 \
-                  + 0.001 * con[0] ** 2 \
-                  + 0.001 * con[1] ** 2
+                  + 2.0 * (st[2] - 4 * sin((2 * pi * st[0]) / 50)) ** 2 \
+                  + 1e-6 * con[0] ** 2 \
+                  + con[1] ** 2
 
         st_next = X[:, k + 1]
         k1 = f(st, con)
@@ -87,6 +87,8 @@ def cloud_mpc(N, state_init, u_init):
         k4 = f(st + Ts * k3, con)
         st_next_RK4 = st + (Ts / 6) * (k1 + 2 * k2 + 2 * k3 + k4)
         g = ca.vertcat(g, st_next - st_next_RK4)
+
+    cost_fn = cost_fn + 2.0 * (X[2, N] - 4 * sin((2 * pi * X[0, N]) / 50)) ** 2
 
     OPT_variables = ca.vertcat(
         X.reshape((-1, 1)),  # Example: 3x11 ---> 33x1 where 3=states, 11=N+1

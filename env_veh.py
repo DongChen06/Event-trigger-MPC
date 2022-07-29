@@ -2,12 +2,12 @@ from mpc import *
 import matplotlib.pyplot as plt
 import os
 
-state_init = ca.DM([0, 10, 0, -0.0691, 0.2343, -0.0123])
+state_init = ca.DM([10, 20, 4, 10, 0.2343, -0.0123])
 # actual_state_seq = state_init
 # ct = 0
 # alpha = 1
 # t0 = 0
-N = 5
+# N = 10
 # u0_bar = 1e-4 * ca.DM.ones((2, N))
 # u_hat_traj = 1e-4 * ca.DM.ones((2, N))
 # X0_2 = ca.repmat(state_init, 1, N)
@@ -21,7 +21,7 @@ buffer_size = 2
 
 
 class VehEnv:
-    def __init__(self, max_ct=100, N=5):
+    def __init__(self, max_ct=100, N=10):
         self.max_ct = max_ct
         self.N = N
         self.obs_dim = 6
@@ -32,9 +32,9 @@ class VehEnv:
 
     def reset(self):
         self.t0 = 0
-        self.u0_bar = 1e-3 * ca.DM.ones((2, N))
-        self.u_hat_traj = 1e-3 * ca.DM.ones((2, N))
-        self.X0_2 = ca.repmat(state_init, 1, N)
+        self.u0_bar = 1e-3 * ca.DM.ones((2, self.N))
+        self.u_hat_traj = 1e-3 * ca.DM.ones((2, self.N))
+        self.X0_2 = ca.repmat(state_init, 1, self.N)
         self.x0 = ca.DM([0, 10, 0, -0.0691, 0.2343, -0.0123])  # x, vx, y, vy, phi, r
         self.all_actual_states = self.x0
         self.all_cloud_states = []
@@ -94,9 +94,9 @@ class VehEnv:
 
 
 if __name__ == "__main__":
-    seed = 66
-    np.random.seed(seed)
-    random.seed(seed)
+    # seed = 66
+    # np.random.seed(seed)
+    # random.seed(seed)
 
     if not os.path.exists('runs' + '/Veh/local'):
         os.mkdir('runs' + '/Veh/local')
@@ -121,6 +121,11 @@ if __name__ == "__main__":
     np.save('runs' + '/Veh/local/ob_history', local_obs)
     np.save('runs' + '/Veh/local/actions', local_a)
     np.save('runs' + '/Veh/local/numpy_u', np.array(all_u))
+
+    plt.plot(Pen.all_actual_states[0,:].T, Pen.all_actual_states[2,:].T, label ='actual')
+    plt.plot(Pen.all_actual_states[0, :].T, 4*sin(2*pi*Pen.all_actual_states[0, :].T/50), label ='path')
+    plt.legend()
+    plt.show()
 
     # test the cloud mpc
     Pen.reset()
@@ -150,3 +155,8 @@ if __name__ == "__main__":
 
 # plt.figure()
 # plt.plot(Pen.all_u[1, :].T)
+#     plt.plot(Pen.all_cloud_states[0,:].T, Pen.all_cloud_states[2,:].T, label ='cloud')
+#     plt.plot(Pen.all_actual_states[0,:].T, Pen.all_actual_states[2,:].T, label ='actual')
+#     plt.plot(Pen.all_actual_states[0, :].T, 4*sin(2*pi*Pen.all_actual_states[0, :].T/50), label ='path')
+#     plt.legend()
+#     plt.show()

@@ -1,5 +1,4 @@
 import os
-import gym
 import time
 import argparse
 import datetime
@@ -14,7 +13,7 @@ from shutil import copy
 parser = argparse.ArgumentParser(description='RL algorithms with PyTorch in Pendulum environment')
 parser.add_argument('--env', type=str, default='Veh',
                     help='pendulum environment')
-parser.add_argument('--algo', type=str, default='sac',
+parser.add_argument('--algo', type=str, default='ppo',
                     help='select an algorithm among vpg, trpo, ppo, ddpg, td3, sac, asac')
 parser.add_argument('--phase', type=str, default='train',
                     help='choose between training phase and testing phase')
@@ -24,7 +23,7 @@ parser.add_argument('--load', type=str, default=None,
                     help='copy & paste the saved model name, and load it')
 parser.add_argument('--seed', type=int, default=0, 
                     help='seed for random number generators')
-parser.add_argument('--iterations', type=int, default=500,
+parser.add_argument('--iterations', type=int, default=20000,
                     help='iterations to run and train agent')
 parser.add_argument('--eval_per_train', type=int, default=5,
                     help='evaluation number per training')
@@ -36,25 +35,25 @@ args = parser.parse_args()
 device = torch.device('cuda', index=args.gpu_index) if torch.cuda.is_available() else torch.device('cpu')
 
 if args.algo == 'vpg':
-    from deep_rl.agents.vpg import Agent
+    from agents.vpg import Agent
 elif args.algo == 'npg':
-    from deep_rl.agents.trpo import Agent
+    from agents.trpo import Agent
 elif args.algo == 'trpo':
-    from deep_rl.agents.trpo import Agent
+    from agents.trpo import Agent
 elif args.algo == 'ppo':
-    from deep_rl.agents.ppo import Agent
+    from agents.ppo import Agent
 elif args.algo == 'ddpg':
-    from deep_rl.agents.ddpg import Agent
+    from agents.ddpg import Agent
 elif args.algo == 'td3':
-    from deep_rl.agents.td3 import Agent
+    from agents.td3 import Agent
 elif args.algo == 'sac':
-    from deep_rl.agents.sac import Agent
+    from agents.sac import Agent
 elif args.algo == 'asac': # Automating entropy adjustment on SAC
-    from deep_rl.agents.sac import Agent
+    from agents.sac import Agent
 elif args.algo == 'tac': 
-    from deep_rl.agents.sac import Agent
+    from agents.sac import Agent
 elif args.algo == 'atac': # Automating entropy adjustment on TAC
-    from deep_rl.agents.sac import Agent
+    from agents.sac import Agent
 
 
 def main():

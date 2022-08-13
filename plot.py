@@ -151,7 +151,7 @@ def plot_Pendulum():
 
 
 def plot_Veh():
-    model_path = 'sac_s_0_t_2022_07_28_13_07_53'
+    model_path = 'local'
     path = 'runs/Veh/' + model_path
     obs = np.load(path + '/ob_history.npy')
     actions = np.load(path + '/actions.npy')
@@ -168,8 +168,9 @@ def plot_Veh():
     axs[0, 1].set_title('Tracking error')
     axs[0, 1].set_xlabel('Time steps')
 
-    axs[0, 2].plot(actions, c='green', label='actions')
-    axs[0, 2].plot(np.clip(actions, 0, 1), c='red', label='actions_clipped')
+    # axs[0, 2].plot(actions, c='green', label='actions')
+    # axs[0, 2].plot(np.clip(actions, 0, 1), c='red', label='actions_clipped')
+    axs[0, 2].plot(np.clip(actions, 0, 1), c='red')
     axs[0, 2].set_title('Action')
     axs[0, 2].set_xlabel('Time steps')
     axs[0, 2].legend()
@@ -199,6 +200,7 @@ def plot_Veh():
 
     plt.tight_layout()
     plt.legend()
+    plt.savefig(path + "/performance.pdf")
     plt.show()
 
     # plt.figure(2)

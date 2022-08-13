@@ -1,18 +1,17 @@
-import os
-import gym
 import random
 import argparse
-import datetime
 import numpy as np
 import torch
 from env_veh import VehEnv
+import os
+
 
 
 # Configurations
 parser = argparse.ArgumentParser(description='RL algorithms with PyTorch in Pendulum environment')
 parser.add_argument('--env', type=str, default='Veh',
                     help='pendulum environment')
-parser.add_argument('--algo', type=str, default='sac',
+parser.add_argument('--algo', type=str, default='ppo',
                     help='select an algorithm among vpg, npg, trpo, ppo, ddpg, td3, sac, asac, tac, atac')
 parser.add_argument('--seed', type=int, default=0, 
                     help='seed for random number generators')
@@ -23,25 +22,25 @@ args = parser.parse_args()
 device = torch.device('cuda', index=args.gpu_index) if torch.cuda.is_available() else torch.device('cpu')
 
 if args.algo == 'vpg':
-    from deep_rl.agents.vpg import Agent
+    from agents.vpg import Agent
 elif args.algo == 'npg':
-    from deep_rl.agents.trpo import Agent
+    from agents.trpo import Agent
 elif args.algo == 'trpo':
-    from deep_rl.agents.trpo import Agent
+    from agents.trpo import Agent
 elif args.algo == 'ppo':
-    from deep_rl.agents.ppo import Agent
+    from agents.ppo import Agent
 elif args.algo == 'ddpg':
-    from deep_rl.agents.ddpg import Agent
+    from agents.ddpg import Agent
 elif args.algo == 'td3':
-    from deep_rl.agents.td3 import Agent
+    from agents.td3 import Agent
 elif args.algo == 'sac':
-    from deep_rl.agents.sac import Agent
+    from agents.sac import Agent
 elif args.algo == 'asac': # Automating entropy adjustment on SAC
-    from deep_rl.agents.sac import Agent
+    from agents.sac import Agent
 elif args.algo == 'tac': 
-    from deep_rl.agents.sac import Agent
+    from agents.sac import Agent
 elif args.algo == 'atac': # Automating entropy adjustment on TAC
-    from deep_rl.agents.sac import Agent
+    from agents.sac import Agent
 
 
 def main():
@@ -79,38 +78,39 @@ def main():
     seed = 66
 
     # specify the model directory here
-    model_path = 'sac_s_0_t_2022_07_28_13_07_53'
+    model_path = 'ppo_s_0_t_2022_08_11_18_50_31'
 
-    # """finding the best model"""
-    # print("------Finding the best model------")
-    # for i in range(20, 501, 5):
-    #     np.random.seed(seed)
-    #     torch.manual_seed(seed)
-    #     random.seed(seed)
-    #
-    #     pretrained_model_path = 'runs/Veh/' + model_path
-    #     pretrained_model = torch.load(pretrained_model_path + '/save_model/Veh_sac_s_0_i_' + str(i) + '.pt', map_location=device)
-    #     agent.policy.load_state_dict(pretrained_model)
-    #
-    #     # Run one episode
-    #     eval_step_length, eval_episode_return, ob_history, actions = agent.test(args.max_step)
-    #     print("Model Index:", i, "Evaluation Return:", eval_episode_return, "Episode Length:", eval_step_length)
-    #     returns.append(eval_episode_return)
-    #     if eval_episode_return >= best_return:
-    #         best_model_index = i
-    #         best_return = eval_episode_return
-    #
-    # print("Best model is", best_model_index)
-    # print("Best return is", max(returns))
-    # print("------------End------------")
+    """finding the best model"""
+    print("------Finding the best model------")
+    for i in range(18000, 20001, 5):
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        random.seed(seed)
 
-    """test a particular model"""
+        pretrained_model_path = 'runs/Veh/' + model_path
+        pretrained_model = torch.load(pretrained_model_path + '/save_model/Veh_ppo_s_0_i_' + str(i) + '.pt', map_location=device)
+        agent.policy.load_state_dict(pretrained_model)
+
+        # Run one episode
+        eval_step_length, eval_episode_return, ob_history, actions = agent.test(args.max_step)
+        print("Model Index:", i, "Evaluation Return:", eval_episode_return, "Episode Length:", eval_step_length)
+        returns.append(eval_episode_return)
+        if eval_episode_return >= best_return:
+            best_model_index = i
+            best_return = eval_episode_return
+
+    print("Best model is", best_model_index)
+    print("Best return is", max(returns))
+    print("------------End------------")
+
+    # """test a particular model"""
     print("------Testing the Best Model------")
+    print("Model path:", model_path)
     np.random.seed(seed)
     torch.manual_seed(seed)
     random.seed(seed)
     pretrained_model_path = 'runs/Veh/' + model_path
-    pretrained_model = torch.load(pretrained_model_path + '/save_model/Veh_sac_s_0_i_' + str(480) + '.pt', map_location=device)
+    pretrained_model = torch.load(pretrained_model_path + '/save_model/Veh_ppo_s_0_i_' + str(best_model_index) + '.pt', map_location=device)
     agent.policy.load_state_dict(pretrained_model)
 
     # Run one episode

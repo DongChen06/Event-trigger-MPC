@@ -43,11 +43,11 @@ def cloud_local_mpc(ct, N, alpha, t0, u0_bar, u_hat_traj, X0_2, state_init, actu
 
     # w = -0.01 + 0.15 * np.random.rand(n_states, 150)  # local
     # w_x = -0.02 + 0.2 * np.random.rand(n_states, 150)  # cloud
-    seed = 66
-    np.random.seed(seed)
-    random.seed(seed)
-    w = 0 * np.random.rand(n_states, 300)  # Original
-    w_x = 0.00 * np.random.rand(n_states, 300)  # Original
+    # seed = 66
+    # np.random.seed(seed)
+    # random.seed(seed)
+    w = 0.1 * np.random.rand(n_states, 300)  # Original
+    w_x = 0 * np.random.rand(n_states, 300)  # Original
 
     # control symbolic variables
     u1 = ca.SX.sym('u1')
@@ -119,9 +119,10 @@ def cloud_local_mpc(ct, N, alpha, t0, u0_bar, u_hat_traj, X0_2, state_init, actu
         state_init_hat = state_init + w_x[:, ct:ct + 1]
         if ct == 0:
             u_hat_traj, pred_states_cloud = cloud_mpc(N, state_init_hat, u0_bar[:, -1])
+            all_states_cloud = ca.horzcat(all_states_cloud, pred_states_cloud)
         else:
             u_hat_traj, pred_states_cloud = cloud_mpc(N, state_init_hat, u_hat_traj[:, -1])
-        all_states_cloud = ca.horzcat(all_states_cloud, pred_states_cloud)
+            all_states_cloud = ca.horzcat(all_states_cloud, pred_states_cloud[:, 1:])
 
     args['p'] = ca.vertcat(state_init)
     # optimization variable current state
@@ -153,8 +154,7 @@ def cloud_local_mpc(ct, N, alpha, t0, u0_bar, u_hat_traj, X0_2, state_init, actu
 
     # cost = (state_init.T @ Q @ state_init) + (u @ R @ u)
     cost = 2.0 * (state_init[2] - 4 * sin(2 * pi / 50 * state_init[0])) ** 2 \
-           + 1e-6 * u[0] ** 2 \
-           + u[1] ** 2
+           + 1e-6 * u[0] ** 2 + u[1] ** 2
 
     t0, state_init = shift_timestep(Ts, t0, state_init, u, plant)  # applying the control to the plant
     state_init += w[:, ct: ct + 1]

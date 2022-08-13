@@ -1,12 +1,11 @@
 import numpy as np
 import torch
-import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
-from deep_rl.agents.common.utils import *
-from deep_rl.agents.common.buffers import *
-from deep_rl.agents.common.networks import *
+from agents.common.utils import *
+from agents.common.buffers import *
+from agents.common.networks import *
 
 
 class Agent(object):
